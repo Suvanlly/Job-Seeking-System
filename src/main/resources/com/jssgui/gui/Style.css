@@ -1,0 +1,40 @@
+.button{
+    -fx-background-color: #F6F6F6;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #D7D7D7;
+}
+
+.buttonBlue{
+    -fx-background-color: #0095C8;
+    -fx-text-fill: #FFFFFF;
+}
+.buttonBlue:hover{
+    -fx-background-color: #30A9D2;
+}
+
+.buttonWhite{
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0095C8;
+}
+.buttonWhite:hover{
+    -fx-background-color: #F6F6F6;
+}
+
+.buttonWhiteRound{
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 35em;
+    -fx-min-width: 37px;
+    -fx-min-height: 36px;
+    -fx-max-width: 37px;
+    -fx-max-height: 36px;
+}
+.buttonWhiteRound:hover{
+    -fx-background-color: #E6E6E6;
+}
+
+.tfieldLabels{
+    -fx-text-fill: #A1A1A3;
+    -fx-font-size: 17.0;
+}
