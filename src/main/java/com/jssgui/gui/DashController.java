@@ -5,20 +5,19 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import org.w3c.dom.events.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,9 +49,12 @@ public class DashController implements Initializable {
     private Button buttonLogout;
 
     @FXML
+    private Button buttonSearchSeekers;
+
+    @FXML
     private Label labelHeader;
     @FXML
-    private Label labelTest;
+    private Label labelName;
 
     @FXML
     private ProfileController profileController;
@@ -80,8 +82,15 @@ public class DashController implements Initializable {
     private String selectedLocation;
 
     @FXML
-    private String selectedSalary;
+    private int selectedSalary;
 
+    @FXML
+    private RadioButton radioButtonJob;
+
+    @FXML
+    private RadioButton radioButtonSeeker;
+
+    private String searchMode;
 
 
     UserInstance inst = UserInstance.getInstance();
@@ -90,23 +99,44 @@ public class DashController implements Initializable {
 
     }
 
-
     public void initialize(URL location, ResourceBundle resources){
-        labelTest.setText("Test - username: " + inst.getUser().getUsername() + " " + "typeID: " + inst.getUser().getUserTypeID()); //test
-        /*comboCategory.setItems(FXCollections.observableArrayList("Software Engineer","Business Analyst","Consultant", "Web Developer", "Network Engineer", "Product Manager", "IT Support","Test operator"));
-        comboLocation.setItems(FXCollections.observableArrayList("Melbourne","Sydney","Brisbane","Perth","Hobart","Remote"));
-        comboSalary.setItems(FXCollections.observableArrayList("Below $50000","$50000-$70000","$70000-$90000","$90000-$120000","$120000-$150000","Above $150000"));
-        */
+        if (inst.getType()==1){
+            labelName.setText(inst.getSeek().getFirstName() + " " + inst.getSeek().getLastName());
+        }
+        else{
+            labelName.setText(inst.getRec().getFirstName() + " " + inst.getRec().getLastName());
+        }
+
+        try {
+            Parent centerPane = FXMLLoader.load(Utility.class.getResource("Dashboard.fxml"));
+            borderMain.setCenter(centerPane);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
+        searchMode = "Job";
         populateCategory();
         populateLocation();
         populateSalary();
+
     }
 
     public void dashPress(ActionEvent event) {
-        if (event.getSource() == buttonDash || event.getSource() == buttonChat || event.getSource() == buttonInbox){
+        if (event.getSource() == buttonDash || event.getSource() == buttonInbox){
             labelHeader.setText(buttonDash.getText());
             try {
                 Parent centerPane = FXMLLoader.load(Utility.class.getResource("Dashboard.fxml"));
+                borderMain.setCenter(centerPane);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+        else if (event.getSource() == buttonChat){
+            labelHeader.setText(buttonDash.getText());
+            try {
+                Parent centerPane = FXMLLoader.load(Utility.class.getResource("DashboardInvites.fxml"));
                 borderMain.setCenter(centerPane);
             }
             catch(IOException e){
@@ -126,8 +156,14 @@ public class DashController implements Initializable {
         else if (event.getSource() == buttonJobs){
             labelHeader.setText(buttonJobs.getText());
             try {
-                Parent centerPane = FXMLLoader.load(Utility.class.getResource("Jobs.fxml"));
-                borderMain.setCenter(centerPane);
+                if (inst.getType()==1){
+                    Parent centerPane = FXMLLoader.load(Utility.class.getResource("JobBookmarks.fxml"));
+                    borderMain.setCenter(centerPane);
+                }
+                else{
+                    Parent centerPane = FXMLLoader.load(Utility.class.getResource("Jobs.fxml"));
+                    borderMain.setCenter(centerPane);
+                }
             }
             catch(IOException e){
                 e.printStackTrace();
@@ -136,8 +172,14 @@ public class DashController implements Initializable {
         else if (event.getSource() == buttonCandidates){
             labelHeader.setText(buttonCandidates.getText());
             try {
-                Parent centerPane = FXMLLoader.load(Utility.class.getResource("Candidates.fxml"));
-                borderMain.setCenter(centerPane);
+                if (inst.getType()==1){
+                    Parent centerPane = FXMLLoader.load(Utility.class.getResource("Applications.fxml"));
+                    borderMain.setCenter(centerPane);
+                }
+                else{
+                    Parent centerPane = FXMLLoader.load(Utility.class.getResource("Candidates.fxml"));
+                    borderMain.setCenter(centerPane);
+                }
             }
             catch(IOException e){
                 e.printStackTrace();
@@ -156,21 +198,68 @@ public class DashController implements Initializable {
         else if (event.getSource() == buttonSearch) {
 
             searchQuery = searchBar.getText();
-            handleComboSelections();
 
-            //testing value of combobox/search query
-            System.out.println(selectedCategory);
-            System.out.println(selectedLocation);
-            System.out.println(selectedSalary);
-            System.out.println(searchQuery);
+            if ( searchMode.equals("Job")) {
 
-            //labelHeader.setText(buttonSearch.getText());
-            try {
-                Parent centerPane = FXMLLoader.load(Utility.class.getResource("Search.fxml"));
-                borderMain.setCenter(centerPane);
+                handleCategory(event);
+                handleLocation(event);
+                handleSalary(event);
+
+                labelHeader.setText("Search");
+                try {
+
+                    SearchController sc = new SearchController();
+                    sc.setSearchInput(searchQuery);
+                    sc.setSearchLocationInput(selectedLocation);
+                    sc.setSearchCategoryInput(selectedCategory);
+                    sc.setSearchSalaryInput(selectedSalary);
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setController(sc);
+                    loader.setLocation(getClass().getResource("Search.fxml"));
+                    Parent centerPane = loader.load();
+                    borderMain.setCenter(centerPane);
+                }
+                catch(IOException e){
+                    e.printStackTrace();
+                }
             }
-            catch(IOException e){
-                e.printStackTrace();
+
+            else if (searchMode.equals("Seeker")) {
+
+                handleLocation(event);
+
+
+                labelHeader.setText("Search");
+                try {
+
+
+                    SearchSeekersController ssc = new SearchSeekersController();
+                    ssc.setSearchInput(searchQuery);
+                    ssc.setSearchLocationInput(selectedLocation);
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setController(ssc);
+                    loader.setLocation(getClass().getResource("SearchSeekers.fxml"));
+                    Parent centerPane = loader.load();
+                    borderMain.setCenter(centerPane);
+                }
+                catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+        else if (event.getSource() == radioButtonJob | event.getSource()  == radioButtonSeeker) {
+
+            if (radioButtonJob.isSelected()) {
+                comboCategory.setVisible(true);
+                comboSalary.setVisible(true);
+                searchMode = "Job";
+            }
+            else if (radioButtonSeeker.isSelected()) {
+                comboCategory.setVisible(false);
+                comboSalary.setVisible(false);
+                searchMode = "Seeker";
             }
         }
         else{
@@ -179,58 +268,109 @@ public class DashController implements Initializable {
     }
 
     public void populateCategory() {
-        //change the list to retrieve from database
-        List<String> categories = Arrays.asList("category1", "category2", "category3");
-        for (String category : categories) {
-            comboCategory.getItems().add(category);
+
+        comboCategory.getItems().add(null);
+
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        try{
+            preparedStatement = connection.prepareStatement("SELECT DISTINCT cat_name FROM category c");
+            resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                comboCategory.getItems().add(resultSet.getString("cat_name"));
+            }
+            preparedStatement.close();
+            resultSet.close();
         }
-        comboCategory.setValue("Select Category");
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void populateLocation() {
-        //change the list to retrieve from database
-        List<String> locations = Arrays.asList("location1", "location2", "location3");
-        for (String location : locations) {
-            comboLocation.getItems().add(location);
+
+        comboLocation.getItems().add(null);
+
+        Connection connection = DBConnection.getConnection();
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        if (searchMode.equals("Job")) {
+            try {
+                preparedStatement = connection.prepareStatement("SELECT DISTINCT j_location FROM job_post jp");
+                resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    comboLocation.getItems().add(resultSet.getString("j_location"));
+                }
+                preparedStatement.close();
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        comboLocation.setValue("Select Location");
+        else if (searchMode.equals("Seeker")) {
+            try {
+                preparedStatement = connection.prepareStatement("SELECT DISTINCT state FROM user u");
+                resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    comboLocation.getItems().add(resultSet.getString("state"));
+                }
+                preparedStatement.close();
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 
     public void populateSalary() {
-        //change the list to retrieve from database
-        List<String> salaries = Arrays.asList("salary1", "salary2", "salary3");
-        for (String salary : salaries) {
-            comboSalary.getItems().add(salary);
+
+
+        String[] salaryRanges = {"Salary Range", "$30,000+","$40,000+", "$50,000+", "$60,000+", "$70,000+", "$80,000+", "$100,000+", "$120,000+", "$150,000+"};
+
+        try{
+            for (String salary : salaryRanges) {
+                comboSalary.getItems().add(salary);
+            }
+
         }
-        comboSalary.setValue("Select Salary");
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public void handleComboSelections() {
-        comboCategory.setOnAction(actionEvent -> {
-            selectedCategory = comboCategory.getSelectionModel().getSelectedItem();
-        });
-        comboLocation.setOnAction(actionEvent -> {
-            selectedLocation = comboLocation.getSelectionModel().getSelectedItem();
-        });
-        comboSalary.setOnAction(actionEvent-> {
-            selectedSalary = comboSalary.getSelectionModel().getSelectedItem();
-        });
+    public void handleCategory(ActionEvent event) {
+        selectedCategory = comboCategory.getSelectionModel().getSelectedItem();
     }
 
-    public String getSearchQuery() {
-        return this.searchQuery;
+    public void handleLocation(ActionEvent event) {
+        selectedLocation = comboLocation.getSelectionModel().getSelectedItem();
     }
 
-    public String getSelectedCategory() {
-        return this.selectedCategory;
+    public void handleSalary(ActionEvent event) {
+
+        if(comboSalary.getSelectionModel().getSelectedItem() == null) {
+            selectedSalary = 0;
+        }
+        else if (comboSalary.getSelectionModel().getSelectedItem().equals("Salary Range")) {
+            selectedSalary = 0;
+        }
+        else {
+            selectedSalary = Integer.parseInt(comboSalary.getSelectionModel().getSelectedItem().replaceAll("(\\$|\\,|\\+)", ""));
+        }
     }
 
-    public String getSelectedLocation() {
-        return this.selectedLocation;
-    }
 
-    public String getSelectedSalary() {
-        return this.selectedSalary;
-    }
+
+
 
 }
