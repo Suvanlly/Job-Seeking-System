@@ -12,8 +12,6 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
-    UserInstance inst = UserInstance.getInstance();
-
     @FXML
     private AnchorPane paneSign;
 
@@ -31,7 +29,9 @@ public class LoginController implements Initializable {
     @FXML
     private PasswordField passID;
     @FXML
-    private Label wrong;
+    private Label labelWrong;
+
+    UserInstance inst = UserInstance.getInstance();
 
     public LoginController(){}
 
@@ -43,13 +43,17 @@ public class LoginController implements Initializable {
                     Utility.logInUser(event, userID.getText(), passID.getText());
                 }
                 else if(userID.getText().isEmpty() && passID.getText().isEmpty()){
-                    wrong.setText("Please Enter Your Credentials.");
+                    labelWrong.setText("Please Enter Your Credentials.");
                 }
                 else if(userID.getText().isEmpty() && !passID.getText().isEmpty()){
-                    wrong.setText("Please Enter A Username.");
+                    labelWrong.setText("Please Enter A Username.");
                 }
-                else {
-                    wrong.setText("Please Enter A Password.");
+                else if(!userID.getText().isEmpty() && passID.getText().isEmpty()){
+                    labelWrong.setText("Please Enter A Password.");
+                }
+
+                if(!userID.getText().isEmpty() && !passID.getText().isEmpty()) {
+                    labelWrong.setText("Incorrect Username or Password. Please Try Again.");
                 }
             }
         });
@@ -80,6 +84,4 @@ public class LoginController implements Initializable {
             }
         });
     }
-
-    //wrong.setText("Incorrect Username or Password. Please Try Again.");
 }
