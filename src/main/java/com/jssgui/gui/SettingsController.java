@@ -1,4 +1,4 @@
 package com.jssgui.gui;
+public class SettingsController{
 
-public class SettingsController {
 }

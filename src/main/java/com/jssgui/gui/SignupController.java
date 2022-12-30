@@ -1,17 +1,29 @@
 package com.jssgui.gui;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.util.converter.IntegerStringConverter;
 import javafx.scene.control.TextField;
+
 import java.sql.Date;
 
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.function.UnaryOperator;
+
+import static java.sql.Date.valueOf;
 
 public class SignupController implements Initializable{
     @FXML
@@ -43,8 +55,6 @@ public class SignupController implements Initializable{
     @FXML
     private TextField tfCity;
     @FXML
-    private TextField tfState;
-    @FXML
     private TextField tfPost;
     @FXML
     private TextField tfCountry;
@@ -66,8 +76,6 @@ public class SignupController implements Initializable{
     @FXML
     private TextField tfCompCity;
     @FXML
-    private TextField tfCompState;
-    @FXML
     private TextField tfCompPost;
     @FXML
     private TextField tfCompCountry;
@@ -77,29 +85,83 @@ public class SignupController implements Initializable{
     @FXML
     private Label blankError;
 
+    @FXML
+    private ComboBox comboState;
+
+    @FXML
+    private ComboBox comboCompState;
+
+    @FXML
+    private DatePicker datePickerDob;
+
     UserInstance inst = UserInstance.getInstance();
 
     public void initialize(URL location, ResourceBundle resources){
-        User user = inst.getUser();
-        blankError.setText("Test User Type - " + user.getUserTypeID()); //test user type
 
-        tfCompletion.disableProperty().bind(tfEdu.textProperty().isEmpty());
+
+
+        String[] states = {"Australian Capital Territory", "New South Wales", "Northern Territory", "Queensland", "South Australia", "Tasmania", "Victoria", "Western Australia"};
+
+
+        User user = inst.getUser();
+
         if (user.getUserTypeID() == 1){
-            buttonSubmit.disableProperty().bind(tfFirst.textProperty().isEmpty().or(tfLast.textProperty().isEmpty()).or(tfUser.textProperty().isEmpty()).or(tfPass.textProperty().isEmpty()).or(tfPassConfirm.textProperty().isEmpty()).or(tfEmail.textProperty().isEmpty()).or(tfDob.textProperty().isEmpty()).or(tfContact.textProperty().isEmpty()).or(tfAddress.textProperty().isEmpty()).or(tfCity.textProperty().isEmpty()).or(tfState.textProperty().isEmpty()).or(tfPost.textProperty().isEmpty()).or(tfCountry.textProperty().isEmpty()));
+            for (String inputStates : states) {
+                comboState.getItems().add(inputStates);
+
+            }
         }
         else{
-            buttonSubmit.disableProperty().bind(tfFirst.textProperty().isEmpty().or(tfLast.textProperty().isEmpty()).or(tfUser.textProperty().isEmpty()).or(tfPass.textProperty().isEmpty()).or(tfPassConfirm.textProperty().isEmpty()).or(tfEmail.textProperty().isEmpty()).or(tfDob.textProperty().isEmpty()).or(tfContact.textProperty().isEmpty()).or(tfAddress.textProperty().isEmpty()).or(tfCity.textProperty().isEmpty()).or(tfState.textProperty().isEmpty()).or(tfPost.textProperty().isEmpty()).or(tfCountry.textProperty().isEmpty()).or(tfCompany.textProperty().isEmpty()).or(tfCompEmail.textProperty().isEmpty()).or(tfCompNo.textProperty().isEmpty()).or(tfCompAddress.textProperty().isEmpty()).or(tfCompCity.textProperty().isEmpty()).or(tfCompState.textProperty().isEmpty()).or(tfCompPost.textProperty().isEmpty()).or(tfCompCountry.textProperty().isEmpty()));
+            for (String inputStates : states) {
+                comboState.getItems().add(inputStates);
+                comboCompState.getItems().add(inputStates);
+            }
+            comboCompState.getSelectionModel().selectFirst();
         }
+
+        comboState.getSelectionModel().selectFirst();
+        datePickerDob.setValue(LocalDate.now());
+
+
+        tfCompletion.disableProperty().bind(tfEdu.textProperty().isEmpty());
+
+        tfCompletion.lengthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                if (newValue.intValue() > 4) {
+                    tfCompletion.setText(tfCompletion.getText().substring(0,4));
+                }
+
+            }
+        });
+
+        tfCompletion.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
+                if (!newValue.matches("\\d")) {
+                    tfCompletion.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+        if (user.getUserTypeID() == 1){
+            buttonSubmit.disableProperty().bind(tfFirst.textProperty().isEmpty().or(tfLast.textProperty().isEmpty()).or(tfUser.textProperty().isEmpty()).or(tfPass.textProperty().isEmpty()).or(tfPassConfirm.textProperty().isEmpty()).or(tfEmail.textProperty().isEmpty()).or(tfContact.textProperty().isEmpty()).or(tfAddress.textProperty().isEmpty()).or(tfCity.textProperty().isEmpty()).or(tfPost.textProperty().isEmpty()).or(tfCountry.textProperty().isEmpty()));
+        }
+        else{
+            buttonSubmit.disableProperty().bind(tfFirst.textProperty().isEmpty().or(tfLast.textProperty().isEmpty()).or(tfUser.textProperty().isEmpty()).or(tfPass.textProperty().isEmpty()).or(tfPassConfirm.textProperty().isEmpty()).or(tfEmail.textProperty().isEmpty()).or(tfContact.textProperty().isEmpty()).or(tfAddress.textProperty().isEmpty()).or(tfCity.textProperty().isEmpty()).or(tfPost.textProperty().isEmpty()).or(tfCountry.textProperty().isEmpty()).or(tfCompany.textProperty().isEmpty()).or(tfCompEmail.textProperty().isEmpty()).or(tfCompNo.textProperty().isEmpty()).or(tfCompAddress.textProperty().isEmpty()).or(tfCompCity.textProperty().isEmpty()).or(tfCompPost.textProperty().isEmpty()).or(tfCompCountry.textProperty().isEmpty()));
+        }
+
+
 
         buttonSubmit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if (!tfPass.getText().isEmpty() && tfPass.getText().equals(tfPassConfirm.getText())) {
                     if (user.getUserTypeID() == 1){
-                        Utility.signUp(event, "DashJS.fxml", user.getUserTypeID(), tfUser.getText(), tfPass.getText(), tfFirst.getText(), tfLast.getText(), tfEmail.getText(), Date.valueOf(tfDob.getText()), tfContact.getText(), tfAddress.getText(), tfCity.getText(), tfState.getText(), tfPost.getText(), tfCountry.getText(), tfEdu.getText(), tfCompletion.getText(), tfSkills.getText(), null, null, null, null, null, null, null, null);
+                        Utility.signUp(event, "DashJS.fxml", user.getUserTypeID(), tfUser.getText(), tfPass.getText(), tfFirst.getText(), tfLast.getText(), tfEmail.getText(), valueOf(datePickerDob.getValue()), tfContact.getText(), tfAddress.getText(), tfCity.getText(), comboState.getSelectionModel().getSelectedItem().toString(), tfPost.getText(), tfCountry.getText(), tfEdu.getText(), tfCompletion.getText(), tfSkills.getText(), null, null, null, null, null, null, null, null);
                     }
                     else{
-                        Utility.signUp(event, "DashR.fxml", user.getUserTypeID(), tfUser.getText(), tfPass.getText(), tfFirst.getText(), tfLast.getText(), tfEmail.getText(), Date.valueOf(tfDob.getText()), tfContact.getText(), tfAddress.getText(), tfCity.getText(), tfState.getText(), tfPost.getText(), tfCountry.getText(), tfEdu.getText(), tfCompletion.getText(), tfSkills.getText(), tfCompany.getText(), tfCompEmail.getText(), tfCompNo.getText(), tfCompAddress.getText(), tfCompCity.getText(), tfCompState.getText(), tfCompPost.getText(), tfCompCountry.getText());
+                        Utility.signUp(event, "DashR.fxml", user.getUserTypeID(), tfUser.getText(), tfPass.getText(), tfFirst.getText(), tfLast.getText(), tfEmail.getText(), valueOf(datePickerDob.getValue()), tfContact.getText(), tfAddress.getText(), tfCity.getText(), comboState.getSelectionModel().getSelectedItem().toString(), tfPost.getText(), tfCountry.getText(), tfEdu.getText(), tfCompletion.getText(), tfSkills.getText(), tfCompany.getText(), tfCompEmail.getText(), tfCompNo.getText(), tfCompAddress.getText(), tfCompCity.getText(), comboCompState.getSelectionModel().getSelectedItem().toString(), tfCompPost.getText(), tfCompCountry.getText());
                     }
                 }
                 else {
@@ -114,6 +176,7 @@ public class SignupController implements Initializable{
             public void handle(ActionEvent event) {
                 Utility.changeScene(event,"Login.fxml");
             }
+
         });
     }
     //userError.setText("Username Already Taken. Please Try Again.");
