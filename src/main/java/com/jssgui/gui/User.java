@@ -3,9 +3,6 @@ package com.jssgui.gui;
 import java.util.Date;
 
 public class User {
-    private int userID;
-    private int userTypeID;
-    private String username;
     private String address;
     private String city;
     private String country;
@@ -20,6 +17,9 @@ public class User {
     private String post;
     private String skills;
     private String state;
+    private int userID;
+    private String username;
+    private int userTypeID;
 
     public User(){
     }
