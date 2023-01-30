@@ -82,7 +82,7 @@
                   <Hyperlink layoutX="549.0" layoutY="435.0" text="Forgot your password?" textFill="#0095c8" underline="true" />
                   <Label layoutX="445.0" layoutY="620.0" text="Don't have an account?" textFill="#006dae" />
                   <Hyperlink fx:id="buttonSign" layoutX="575.0" layoutY="617.0" text="Sign Up" textFill="#0095c8" underline="true" />
-                  <Label fx:id="wrong" alignment="CENTER" layoutX="382.0" layoutY="294.0" textAlignment="CENTER" textFill="RED" />
+                  <Label fx:id="labelWrong" alignment="CENTER" layoutX="382.0" layoutY="294.0" textAlignment="CENTER" textFill="RED" />
                </children>
             </AnchorPane>
          </children>

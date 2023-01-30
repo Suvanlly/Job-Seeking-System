@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<ScrollPane fx:id="profile" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="657.0" prefWidth="1337.0" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jssgui.gui.ProfileController">
+<ScrollPane fx:id="scrollProfile" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="657.0" prefWidth="1337.0" styleClass="scrollPaneWhite" stylesheets="@Style.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jssgui.gui.ProfileController">
 
          <content>
             <Pane prefHeight="945.0" prefWidth="1320.0" style="-fx-background-color: #FFFFFF;">
@@ -23,7 +15,8 @@
                         <Font name="Roboto Condensed" size="25.0" />
                      </font>
                   </Label>
-                  <Button layoutX="991.0" layoutY="860.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="121.0" styleClass="buttonBlue" stylesheets="@Style.css" text="Update" textFill="WHITE" />
+            <Button fx:id="buttonCompany" layoutX="1132.0" layoutY="22.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="121.0" styleClass="buttonBlue" stylesheets="@Style.css" text="Company Details" />
+                  <Button fx:id="buttonUpdate" layoutX="1132.0" layoutY="860.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="121.0" styleClass="buttonBlue" stylesheets="@Style.css" text="Update" textFill="WHITE" />
                   <VBox layoutX="165.0" layoutY="85.0" prefHeight="717.0" prefWidth="751.0">
                      <children>
                         <GridPane>
@@ -69,7 +62,7 @@
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
-                        <TextField fx:id="tfUser" />
+                        <TextField fx:id="tfUser" disable="true" />
                         <GridPane>
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -192,11 +185,14 @@
                                           <Insets left="20.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <TextField fx:id="tfState">
-                                       <VBox.margin>
-                                          <Insets left="20.0" />
-                                       </VBox.margin>
-                                    </TextField>
+                              <ComboBox fx:id="comboState" prefHeight="25.0" prefWidth="366.0">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                                 <VBox.margin>
+                                    <Insets left="20.0" />
+                                 </VBox.margin>
+                              </ComboBox>
                                  </children>
                               </VBox>
                            </children>
@@ -268,7 +264,7 @@
                                           <Insets left="20.0" />
                                        </VBox.margin>
                                     </Label>
-                                    <TextField fx:id="tfCompletion" promptText="YYYY">
+                                    <TextField fx:id="tfGraduation" promptText="YYYY">
                                        <VBox.margin>
                                           <Insets left="20.0" />
                                        </VBox.margin>
@@ -285,9 +281,14 @@
                               <Insets top="30.0" />
                            </VBox.margin>
                         </Label>
-                        <TextField fx:id="tfSkills" promptText="Optional" />
+                        <TextField fx:id="tfSkills" promptText="Optional. Separate each skill with a comma(,)." />
                      </children>
                   </VBox>
+            <Label fx:id="labelPassMatch" layoutX="165.0" layoutY="220.0" textFill="RED" />
+            <Label fx:id="labelUpdate" layoutX="165.0" layoutY="75.0" textFill="#0095c8">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font></Label>
 
                </children>
             </Pane>

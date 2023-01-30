@@ -56,7 +56,7 @@
                                 <Insets left="70.0" />
                             </padding>
                         </Button>
-                        <Button fx:id="buttonJobs" alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#dashPress" prefHeight="64.0" prefWidth="264.0" stylesheets="@Style.css" text="Jobs" textFill="#006dae">
+                        <Button fx:id="buttonJobs" alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#dashPress" prefHeight="64.0" prefWidth="264.0" stylesheets="@Style.css" text="Bookmarks" textFill="#006dae">
                             <font>
                                 <Font name="Roboto Condensed" size="21.0" />
                             </font>
@@ -71,7 +71,7 @@
                                 <Insets left="70.0" />
                             </padding>
                         </Button>
-                        <Button fx:id="buttonCandidates" alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#dashPress" prefHeight="64.0" prefWidth="264.0" stylesheets="@Style.css" text="??????" textFill="#006dae">
+                        <Button fx:id="buttonCandidates" alignment="BASELINE_LEFT" graphicTextGap="15.0" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#dashPress" prefHeight="64.0" prefWidth="264.0" stylesheets="@Style.css" text="Applications" textFill="#006dae">
                             <font>
                                 <Font name="Roboto Condensed" size="21.0" />
                             </font>
@@ -123,6 +123,7 @@
    <top>
       <AnchorPane prefHeight="198.0" BorderPane.alignment="CENTER">
          <children>
+            <Pane layoutX="1558.0" prefHeight="103.0" prefWidth="43.0" style="-fx-background-color: #F6F6F6;" />
                 <Pane layoutX="263.0" layoutY="103.0" prefHeight="95.0" prefWidth="1340.0" style="-fx-background-color: #006dae;">
                     <children>
                         <Label fx:id="labelHeader" layoutY="26.0" text="Dashboard" textFill="WHITE">
@@ -185,53 +186,52 @@
                                 <Insets left="10.0" />
                             </HBox.margin>
                         </Button>
-                        <Label fx:id="topName" prefHeight="51.0" prefWidth="211.0">
+                        <Label fx:id="labelName" prefHeight="29.0" prefWidth="185.0" textFill="#006dae">
                             <font>
-                                <Font size="18.0" />
+                                <Font name="Roboto Condensed" size="23.0" />
                             </font>
-                            <padding>
-                                <Insets left="5.0" />
-                            </padding>
+                     <HBox.margin>
+                        <Insets left="12.0" />
+                     </HBox.margin>
                         </Label>
                     </children>
                 </HBox>
             <Pane prefHeight="199.0" prefWidth="263.0" style="-fx-background-color: #F6F6F6;">
                <children>
-                      <ImageView fitHeight="164.0" fitWidth="185.0" layoutX="50.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+                      <ImageView fitHeight="164.0" fitWidth="185.0" layoutX="51.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                           <image>
                               <Image url="@../../../icons/monash-university-logo-transparent.png" />
                           </image>
                       </ImageView>
-                      <Label layoutX="86.0" layoutY="149.0" text="Job Seeking Centre">
+                      <Label layoutX="87.0" layoutY="149.0" text="Job Seeking Centre">
                           <font>
                               <Font name="Roboto Condensed" size="12.0" />
                           </font>
                       </Label>
+                  <Label alignment="CENTER" layoutX="41.0" layoutY="172.0" prefHeight="27.0" prefWidth="182.0" text="Job Seeker" textFill="#006dae">
+                     <font>
+                        <Font size="18.0" />
+                     </font></Label>
                </children>
             </Pane>
-                <Label fx:id="labelTest" prefHeight="62.0">
-                    <font>
-                        <Font size="15.0" />
-                    </font>
-                </Label>
             <HBox layoutX="302.0" prefHeight="100.0" prefWidth="865.0">
                <children>
-                      <TextField prefHeight="25.0" prefWidth="341.0" promptText="Search Keywords">
+                      <TextField fx:id="searchBar" prefHeight="25.0" prefWidth="341.0" promptText="Search Keywords">
                      <HBox.margin>
                         <Insets top="37.0" />
                      </HBox.margin>
                   </TextField>
-                  <ComboBox fx:id="comboCategory" prefWidth="150.0" promptText="Category">
+                  <ComboBox fx:id="comboLocation" onAction="#handleLocation" prefWidth="150.0" promptText="Location">
                      <HBox.margin>
                         <Insets left="18.0" top="37.0" />
                      </HBox.margin>
                   </ComboBox>
-                  <ComboBox fx:id="comboLocation" prefWidth="150.0" promptText="Location">
+                  <ComboBox fx:id="comboCategory" onAction="#handleCategory" prefWidth="150.0" promptText="Category">
                      <HBox.margin>
                         <Insets left="18.0" top="37.0" />
                      </HBox.margin>
                   </ComboBox>
-                  <ComboBox fx:id="comboSalary" prefWidth="150.0" promptText="Salary Range">
+                  <ComboBox fx:id="comboSalary" onAction="#handleSalary" prefWidth="150.0" promptText="Salary Range">
                      <HBox.margin>
                         <Insets left="18.0" top="37.0" />
                      </HBox.margin>
