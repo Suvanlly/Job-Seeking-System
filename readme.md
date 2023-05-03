@@ -1,5 +1,4 @@
 V1.1 (Force Pushed)<br />
-User/PW: jdoe/123<br />
 
 - Refactored<br />
 - Added DB support<br />
@@ -68,6 +67,6 @@ JSS provides the following types of management: <br />
 
 
 <h4>Group Member:</h4>
-Weili Sun <br />
+Sophie Sun <br />
 Raymond Fung <br />
 Tram Tran <br />
